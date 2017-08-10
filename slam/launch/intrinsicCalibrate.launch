@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<launch>
+
+<!-- Camera Node -->
+<include file="$(find mcptam)/launch/camera.launch">
+	<arg name="device" value="$(arg device)" />
+	
+</include>
+
+<!-- camera_calibrator node -->
+<node name="camera_calibrator" pkg="mcptam" type="camera_calibrator" output="screen">
+  <param name="cam_name" type="string" value="camera$(arg device)"/>
+  <param name="image_transport" type="string" value="compressed"/> 
+  <param name="image_topic" type="string" value="image_raw" />
+  <param name="info_topic" type="string" value="camera_info"/> 
+</node>
+
+</launch>

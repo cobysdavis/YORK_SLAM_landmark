@@ -1,0 +1,8 @@
+prefix=/home/vgrlab/catkin_ws/src/mcptam/devel
+
+Name: mcptam
+Description: Description of mcptam
+Version: 0.1.2
+Cflags: -I/home/vgrlab/catkin_ws/src/mcptam/devel/include -I/home/vgrlab/catkin_ws/src/mcptam/include -I/usr/local/include
+Libs: -L/home/vgrlab/catkin_ws/src/mcptam/devel/lib -lmcptam -l$ -l:/usr/local/lib/libGVars3.so
+Requires: roscpp image_transport sensor_msgs cv_bridge geometry_msgs tf message_filters std_msgs std_srvs visualization_msgs dynamic_reconfigure pcl_ros message_runtime

@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/vgrlab/catkin_ws/src/mcptam/devel/setup.sh

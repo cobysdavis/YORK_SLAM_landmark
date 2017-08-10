@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<launch>
+	<include file="$(find mcptam)/launch/camera.launch">
+		<arg name="device" value="$(arg device)" />
+		<arg name="camera_name" value="camera1" />
+		<arg name="device" value="1" />
+	</include>
+
+
+	<include file="$(find mcptam)/launch/camera.launch">
+		<arg name="camera_name" value="camera2" />
+		<arg name="device" value="2" />
+	</include>
+</launch>

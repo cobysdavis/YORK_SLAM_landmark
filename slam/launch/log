@@ -1,0 +1,136 @@
+[0m[ INFO] [1499970481.235191998]:   Welcome to pose_calibrator [0m
+[0m[ INFO] [1499970481.235252117]:   ------------------------ [0m
+[0m[ INFO] [1499970481.235265365]:   Multiple Camera Parallel Tracking and Mapping (MCPTAM[0m
+[0m[ INFO] [1499970481.235276412]:   Copyright 2014 Adam Harmat, McGill University[0m
+[0m[ INFO] [1499970481.235296733]:                  Michael Tribou, University of Waterloo[0m
+[0m[ INFO] [1499970481.235308215]:   [0m
+[0m[ INFO] [1499970481.235326646]:   Multi-Camera Parallel Tracking and Mapping (MCPTAM) is free software:[0m
+[0m[ INFO] [1499970481.235361578]:   you can redistribute it and/or modify it under the terms of the GNU [0m
+[0m[ INFO] [1499970481.235376857]:   General Public License as published by the Free Software Foundation,[0m
+[0m[ INFO] [1499970481.235388792]:   either version 3 of the License, or (at your option) any later[0m
+[0m[ INFO] [1499970481.235401899]:   version.[0m
+[0m[ INFO] [1499970481.235417243]:   [0m
+[0m[ INFO] [1499970481.235433559]:   This program is distributed in the hope that it will be useful,[0m
+[0m[ INFO] [1499970481.235446092]:   but WITHOUT ANY WARRANTY; without even the implied warranty of[0m
+[0m[ INFO] [1499970481.235458374]:   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the[0m
+[0m[ INFO] [1499970481.235471233]:   GNU General Public License for more details.[0m
+[0m[ INFO] [1499970481.235484375]:   [0m
+[0m[ INFO] [1499970481.235497620]:   You should have received a copy of the GNU General Public License[0m
+[0m[ INFO] [1499970481.235509875]:   along with this program.  If not, see <http://www.gnu.org/licenses/>.[0m
+[0m[ INFO] [1499970481.235521517]:   [0m
+[0m[ INFO] [1499970481.235534426]:   Based on Parallel Tracking and Mapping (PTAM) software[0m
+[0m[ INFO] [1499970481.235552476]:   Copyright 2008 Isis Innovation Limited[0m
+[0m[ INFO] [1499970481.235564742]:   [0m
+[0m[ INFO] [1499970481.260916867]: VideoSourceMulti: Initializing[0m
+[0m[ INFO] [1499970481.262637385]: CameraGroupsParser: Adding camera camera1 to group 0[0m
+[0m[ INFO] [1499970481.262772870]: VideoSourceMulti: Creating camera group from camera1[0m
+[0m[ INFO] [1499970481.295141846]: CameraGroupSubscriber: Loading 1 cameras[0m
+[0m[ INFO] [1499970481.354870092]: CameraGroupSubscriber: Waiting for camera info from all cameras[0m
+[0m[ INFO] [1499970481.763948991]: CameraGroupSubscriber: Got all info[0m
+[0m[ INFO] [1499970481.764000039]: VideoSourceMulti: Got all CamGroups[0m
+[33m[ WARN] [1499970481.764034159]: VideoSourceMulti: The rotation matrix inside the CameraInfo message of camera1 is invalid![0m
+[33m[ WARN] [1499970481.764055877]: VideoSourceMulti: Perhaps you meant to get the camera pose separately but forgot to set the get_pose_separately parameter to true?[0m
+[33m[ WARN] [1499970481.764082431]: VideoSourceMulti: Defaulting to IDENTITY transformation.[0m
+[33m[ WARN] [1499970481.764107513]: VideoSourceMulti: If you are calibrating the camera, continue without worry. If you are not, things will be messed up.[0m
+[0m[ INFO] [1499970481.764152602]: VideoSourceMulti: Got all parameters [0m
+[0m[ INFO] [1499970481.775066386]: VideoSourceMulti: Got first set of images[0m
+[0m[ INFO] [1499970481.839352925]: TaylorCamera: Inverse polynomial coefficients: 434.525 -282.004 -6.84364 1.56882 16.121 2.8275 -2.65927 -4.06586 -0.916875 1.67289 1.25186 -0.431349 -0.59067 0.0555673 0.162023 -0.0013154 -0.0248797 -0.000409009 0.00170196 [0m
+[0m[ INFO] [1499970481.850594191]: MapMakerServerBase: Reset system client is connecting to: /pose_calibrator/reset[0m
+[0m[ INFO] [1499970481.856181394]: Tracker: Requesting map reset[0m
+[0m[ INFO] [1499970481.856220863]: Tracker: Trying to reset map...[0m
+[0m[ INFO] [1499970482.359129526]: TrackerCalib: Calling reset on underlying tracker[0m
+[0m[ INFO] [1499970482.533639351]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970482.711584920]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970482.882277981]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970483.046716199]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970483.204766890]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970483.365775769]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970483.540990703]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970483.710129102]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970483.870501340]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970484.034158119]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970484.195791487]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970484.353180665]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970484.514220285]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970484.670336090]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970484.823426275]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970484.984566118]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970485.143469163]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970485.313701991]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970485.504488579]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970485.677160289]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970485.838909210]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970485.999131190]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970486.155015892]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970486.302891843]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970486.455446172]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970486.603887696]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970486.751789930]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970486.900596310]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970487.058545976]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970487.207503580]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970487.361186748]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970487.519625939]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970487.665550334]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970487.816258787]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970487.971093387]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970488.132717341]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970488.283141397]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970488.440411246]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970488.597901845]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970488.755853820]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970488.916491998]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970489.082232645]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970489.238125885]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970489.387365680]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970489.554212857]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970489.708741996]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970489.852720788]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970489.992221973]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970490.148763310]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970490.300343295]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970490.456604062]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970490.732498654]: Rotating by 90 degrees[0m
+[0m[ INFO] [1499970490.732560491]: irMinPos: [-5 -5]   irMaxPos: [3 0][0m
+[0m[ INFO] [1499970490.736763499]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970490.974740281]: Rotating by 0 degrees[0m
+[0m[ INFO] [1499970490.974781569]: irMinPos: [-5 -4]   irMaxPos: [3 1][0m
+[0m[ INFO] [1499970490.977194224]: TrackerCalib: camera1 end of stage.[0m
+[0m[ INFO] [1499970491.2083503... logging to /home/vgrlab/.ros/log/e4d4c1a6-67f6-11e7-bd1a-2cd05aa8b811/roslaunch-vgrlab-Lenovo-IdeaPad-Yoga-13-9542.log
+Checking log directory for disk usage. This may take awhile.
+Press Ctrl-C to interrupt
+Done checking log file disk usage. Usage is <1GB.
+]2;pose_calibrator.launch
+[1mstarted roslaunch server http://10.0.1.14:44605/[0m
+
+SUMMARY
+========
+
+CLEAR PARAMETERS
+ * /pose_calibrator/
+
+PARAMETERS
+ * /pose_calibrator/cam_group_list: [['camera1']]
+ * /pose_calibrator/finder_max_ssd_per_pixel: 500
+ * /pose_calibrator/image_transport: raw
+ * /pose_calibrator/kf_adaptive_thresh: False
+ * /pose_calibrator/kf_distance_mean_diff_fraction: 0.0
+ * /pose_calibrator/pattern_height: 6
+ * /pose_calibrator/pattern_width: 9
+ * /pose_calibrator/pose_out_file: /home/vgrlab/catk...
+ * /pose_calibrator/square_size: 0.025
+ * /rosdistro: kinetic
+ * /rosversion: 1.12.7
+
+NODES
+  /
+    pose_calibrator (mcptam/pose_calibrator)
+
+[1mROS_MASTER_URI=http://10.0.1.14:11311[0m
+]2;pose_calibrator.launch http://10.0.1.14:11311
+core service [/rosout] found
+[1mprocess[pose_calibrator-1]: started with pid [9562][0m
+all processes on machine have died, roslaunch will exit
+shutting down processing monitor...
+... shutting down processing monitor complete
+[1mdone[0m
