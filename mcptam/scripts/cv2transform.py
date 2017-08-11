@@ -6,6 +6,17 @@ import math
 from tempfile import TemporaryFile
 import numpy as np
 
+def translate(value, leftMin, leftMax, rightMin, rightMax):
+    # Figure out how 'wide' each range is
+    leftSpan = leftMax - leftMin
+    rightSpan = rightMax - rightMin
+
+    # Convert the left range into a 0-1 range (float)
+    valueScaled = float(value - leftMin) / float(leftSpan)
+
+    # Convert the 0-1 range into a value in the right range.
+    return rightMin + (valueScaled * rightSpan)
+
 def distance(v1, v2):
     return np.sqrt(np.sum((np.array(v1) - np.array(v2)) ** 2))   
 
@@ -98,14 +109,14 @@ def drawMatches(img1, img2,list1,list2):
 
     # For each pair of points we have between both images
     # draw circles, then connect a line between them
-    for i in range(0,4):
+    for i in range(0,len(list1)):
 	
         # x - columns
         # y - rows
         (x1,y1) = list1[i]
         (x2,y2) = list2[i]
-	print str((x1,y1))
-	print str((x2,y2))
+	#print str((x1,y1))
+	#print str((x2,y2))
         # Draw a small circle at both co-ordinates
         # radius 4
         # colour blue
@@ -128,25 +139,24 @@ def drawMatches(img1, img2,list1,list2):
     return out
 
 
-img1 = cv2.imread('/home/vgrlab/catkin_ws/src/mcptam/scripts/1.jpg',0) # queryImage
-img2 = cv2.imread('/home/vgrlab/catkin_ws/src/mcptam/scripts/logo_colour.jpg',0) # trainImage
+img1 = cv2.imread('/home/vgrlab/catkin_ws/src/YORK_SLAM_landmark/mcptam/scripts/1.jpg',0) # queryImage
+img2 = cv2.imread('/home/vgrlab/catkin_ws/src/YORK_SLAM_landmark/mcptam/scripts/logo_colour.jpg',0) # trainImage
 threshhold=0.3
-
-
 
 # Initiate SIFT detector
 sift = cv2.xfeatures2d.SIFT_create()
 
-#print "post sift"
+
 # find the keypoints and descriptors with SIFT
 kp1, des1 = sift.detectAndCompute(img1,None)
-#print "post sift"
 kp2, des2 = sift.detectAndCompute(img2,None)
-#print "post sift"
+
 
 # BFMatcher with default params
 bf = cv2.BFMatcher()
 matches = bf.knnMatch(des1,des2, k=2)
+
+#applies for cv2.perspectiveTransform previous version before using homography
 
 # Apply ratio test
 good = []
@@ -161,23 +171,21 @@ for m,n in matches:
 
 # cv2.drawMatchesKnn expects list of lists as matches.
 img3 = cv2.drawMatchesKnn(img1,kp1,img2,kp2,good,None,flags=2)
-
 plt.imshow(img3),plt.show()
 
 #output 4 necessary matches
 #matching_points=outputMatches(good2, kp1, 150)
 matching_points = good2
-
-print matching_points
+#print matching_points
 
 query_list, train_list = keypoint_lists(matching_points, kp1, kp2)
 
+#pre Robert
 #point_list=create_same_points(matching_points,kp1,kp2)
 #query_points, train_point = point_list[0], point_list[1]
 
 #draw 4  matching points
 img4 = drawMatches(img1,img2,query_list,train_list)
-
 plt.imshow(img4),plt.show()
 
 query_height, query_width = img1.shape[:2]
@@ -185,12 +193,14 @@ train_height, train_width = img2.shape[:2]
 
 #create transfomration matrix
 homography, mask = cv2.findHomography(query_list, train_list, cv2.RANSAC)
-
+print homography
+#pre Robert
 #M = cv2.getPerspectiveTransform(train_list,query_list)
 
 ftr_corners = np.float32([[0, 0], [train_width, 0], [train_width, train_height], [0, train_width]]).reshape(1, -1, 2)
 corners = np.int32( cv2.perspectiveTransform(ftr_corners, homography).reshape(-1, 2) )
 
+#pre Robert
 #print M
 #matrix=[]
 #for l in M:
@@ -206,5 +216,98 @@ dst1 = cv2.warpPerspective(img1,homography, (train_width, train_height))
 plt.subplot(121),plt.imshow(img1),plt.title('Input')
 plt.subplot(122),plt.imshow(dst1),plt.title('Output')
 plt.show()
+
+#!/usr/bin/env python
+ 
+import cv2
+import numpy as np
+ 
+# Read Image
+im = cv2.imread('/home/vgrlab/catkin_ws/src/YORK_SLAM_landmark/mcptam/scripts/1.jpg');
+size = im.shape
+
+#2D image points. If you change the image, you need to change vector
+'''
+image_points = np.array([
+                            (359, 391),     # Nose tip
+                            (399, 561),     # Chin
+                            (337, 297),     # Left eye left corner
+                            (513, 301),     # Right eye right corne
+                            (345, 465),     # Left Mouth corner
+                            (453, 469)      # Right mouth corner
+                        ], dtype="double")
+print image_points
+'''
+temp=[]
+for m in matching_points:
+	temp.append(kp1[m.queryIdx].pt)
+image_points=np.array(temp)
+print "image points: "
+print image_points
+
+#training image is 8.5x11 in^2=0.2159 x 0.2794 m^2
+#define (0,0,0)= top left of training image
+'''
+# 3D model points.
+model_points = np.array([
+                            (0.0, 0.0, 0.0),             # Nose tip
+                            (0.0, -330.0, -65.0),        # Chin
+                            (-225.0, 170.0, -135.0),     # Left eye left corner
+                            (225.0, 170.0, -135.0),      # Right eye right corne
+                            (-150.0, -150.0, -125.0),    # Left Mouth corner
+                            (150.0, -150.0, -125.0)      # Right mouth corner
+                         
+                        ])
+ '''
+
+train_width_in_m=0.2794
+train_height_in_m=0.2159
+
+temp=[]
+for m in matching_points:
+	real_x=translate(kp1[m.trainIdx].pt[0], 0, query_width, 0, train_width_in_m)
+	real_y=translate(kp1[m.trainIdx].pt[1], 0, -query_height, 0, train_height_in_m)
+	temp.append((real_x,real_y,0))
+model_points=np.array(temp)
+print "model points: "
+print model_points
+
+# Camera internals
+ 
+focal_length = size[1]
+center = (size[1]/2, size[0]/2)
+camera_matrix = np.array(
+                         [[focal_length, 0, center[0]],
+                         [0, focal_length, center[1]],
+                         [0, 0, 1]], dtype = "double"
+                         )
+ 
+print "Camera Matrix :\n {0}".format(camera_matrix)
+ 
+dist_coeffs = np.zeros((4,1)) # Assuming no lens distortion
+(success, rotation_vector, translation_vector) = cv2.solvePnP(model_points, image_points, camera_matrix, dist_coeffs, flags=cv2.CV_ITERATIVE)
+ 
+print "Rotation Vector:\n {0}".format(rotation_vector)
+print "Translation Vector:\n {0}".format(translation_vector)
+
+ 
+# Project a 3D point (0, 0, 1000.0) onto the image plane.
+# We use this to draw a line sticking out of the nose
+ 
+ 
+(nose_end_point2D, jacobian) = cv2.projectPoints(np.array([(0.0, 0.0, 1000.0)]), rotation_vector, translation_vector, camera_matrix, dist_coeffs)
+ 
+for p in image_points:
+    cv2.circle(im, (int(p[0]), int(p[1])), 3, (0,0,255), -1)
+ 
+ 
+p1 = ( int(image_points[0][0]), int(image_points[0][1]))
+p2 = ( int(nose_end_point2D[0][0][0]), int(nose_end_point2D[0][0][1]))
+ 
+cv2.line(im, p1, p2, (255,0,0), 2)
+ 
+# Display image
+cv2.imshow("Output", im)
+cv2.waitKey(0)
 
 
