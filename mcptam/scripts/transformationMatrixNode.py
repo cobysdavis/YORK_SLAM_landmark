@@ -14,7 +14,7 @@ def publishTransform(data):
 	matrix=Float64MultiArray()
 	data = open("matrix.txt", "r").read().split('\n')
   	print data
-	for i in range(0,8):
+	for i in range(0,6):
 		matrix.data.append(float(data[i]))
 	
 	pub.publish(matrix)

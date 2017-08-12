@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+
+<launch>
+
+
+	<node name="picTimer" pkg="YORK_SLAM_landmark" type="picTimer.py"/> 
+
+
+	<node name="transformatioMatrixNode" pkg="YORK_SLAM_landmark" type="transformatioMatrixNode.py"/> 
+
+
+	<node name="webcamPicPublisher" pkg="YORK_SLAM_landmark" type="webcamPicPublisher.py"/> 
+
+
+</launch>
