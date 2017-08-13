@@ -33,7 +33,7 @@ for fname in images:
         # Draw and display the corners
         img = cv2.drawChessboardCorners(img, (7,6), corners2,ret)
         #cv2.imshow('img',img)
-	plt.subplot(121),plt.imshow(img),plt.title('Input')
+	#plt.subplot(121),plt.imshow(img),plt.title('Input')
         #cv2.waitKey(500)
 	print "waiting"
 cv2.destroyAllWindows()

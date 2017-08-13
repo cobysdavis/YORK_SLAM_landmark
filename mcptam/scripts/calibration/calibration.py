@@ -26,18 +26,20 @@ for fname in images:
     # If found, add object points, image points (after refining them)
     if ret == True:
         objpoints.append(objp)
-
+	
         corners2 = cv2.cornerSubPix(gray,corners,(11,11),(-1,-1),criteria)
-        imgpoints.append(corners2)
+	print corners2        
+	imgpoints.append(corners2)
 
         # Draw and display the corners
         img = cv2.drawChessboardCorners(img, (7,6), corners2,ret)
         #cv2.imshow('img',img)
-	plt.subplot(121),plt.imshow(img),plt.title('Input')
         #cv2.waitKey(500)
 	print "waiting"
 cv2.destroyAllWindows()
 
+print objpoints
+print imgpoints
 ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1],None,None)
 print ret
 print mtx

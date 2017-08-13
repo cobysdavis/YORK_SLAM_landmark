@@ -5,15 +5,34 @@ from random import randint, sample
 import math
 from tempfile import TemporaryFile
 import numpy as np
+def filterGoodKeypoints(kp1,avg1,kp2,avg2):
+	kp1new=[]
+	kp2new=[]
+	print avg1
+	print avg2
+	for kp in kp1:
+		if kp.response>avg1:
+			kp1new.append(kp)
+	for kp in kp2:
+		if kp.response>avg2:
+			kp2new.append(kp)
+	return kp1new,kp2new
+			
+def filterGoodMatches(matches,threshhold):
+	good = []
+	for m,n in matches:
+	    if m.distance < threshhold*n.distance:
+		good.append([m])
+	matching_points=[]
+	for m,n in matches:
+	    if m.distance < threshhold*n.distance:
+		matching_points.append(m)
+	return good,matching_points
 
 def get_transform(model_pts,img_points,homography):
 	temp=np.array([img_points])
-	print "temp:"
-	print temp
-	print "image points: "
 	inverse_homography=np.array(np.linalg.inv(homography))
 	image_points=cv2.perspectiveTransform(temp,inverse_homography)
-	print image_points
 
 	# Camera internals
 	focal_length = size[1]
@@ -24,13 +43,13 @@ def get_transform(model_pts,img_points,homography):
 		                 [0, 0, 1]], dtype = "double"
 		                 )
 	 
-	print "Camera Matrix :\n {0}".format(camera_matrix)
+	#print "Camera Matrix :\n {0}".format(camera_matrix)
 	 
 	dist_coeffs = np.zeros((4,1)) # Assuming no lens distortion
 	(success, rotation_vector, translation_vector) = cv2.solvePnP(model_points, image_points, camera_matrix, dist_coeffs, flags=cv2.SOLVEPNP_ITERATIVE)
 	 
-	print "Rotation Vector:\n {0}".format(rotation_vector)
-	print "Translation Vector:\n {0}".format(translation_vector)
+	#print "Rotation Vector:\n {0}".format(rotation_vector)
+	#print "Translation Vector:\n {0}".format(translation_vector)
 
 	return rotation_vector,translation_vector,image_points
 	
@@ -94,40 +113,45 @@ def drawMatches(img1, img2,list1,list2):
 
 img1 = cv2.imread('/home/vgrlab/catkin_ws/src/YORK_SLAM_landmark/mcptam/scripts/1.jpg',0) # queryImage
 img2 = cv2.imread('/home/vgrlab/catkin_ws/src/YORK_SLAM_landmark/mcptam/scripts/logo_colour.jpg',0) # trainImage
-threshhold=0.3
 
 # Initiate SIFT detector
 sift = cv2.xfeatures2d.SIFT_create()
 
-
-
-
 # find the keypoints and descriptors with SIFT
 kp1, des1 = sift.detectAndCompute(img1,None)
 kp2, des2 = sift.detectAndCompute(img2,None)
-
+avg1=0
+avg2=0
+for kp in kp1:
+	avg1+=kp.response
+avg1=avg1/len(kp1)
+for kp in kp2:
+	avg2+=kp.response
+avg2=avg2/len(kp2)
+#kp1,kp2=filterGoodKeypoints(kp1,avg1,kp2,avg2)
 
 # BFMatcher with default params
 bf = cv2.BFMatcher()
 matches = bf.knnMatch(des1,des2, k=2)
 
-#applies for cv2.perspectiveTransform previous version before using homography
-good = []
-for m,n in matches:
-    if m.distance < threshhold*n.distance:
-	good.append([m])
-matching_points=[]
-for m,n in matches:
-    if m.distance < threshhold*n.distance:
-	matching_points.append(m)
 
+
+#applies for cv2.perspectiveTransform previous version before using homography
+print "old matches: " + str(len(matches))
+
+good,matching_points=filterGoodMatches(matches,0.3)
+
+print "new matches: " + str(len(matching_points))
 #to allow homography
 if len(good)>3:
+	print "target recognized, new transformation matrix"
+	
 	# cv2.drawMatchesKnn expects list of lists as matches.
-	img3 = cv2.drawMatchesKnn(img1,kp1,img2,kp2,good,None,flags=2)
+	#img3 = cv2.drawMatchesKnn(img1,kp1,img2,kp2,good,None,flags=2)
 	#plt.imshow(img3),plt.show()
 
-	query_list, train_list = keypoint_lists(matching_points, kp1, kp2)
+	#query_list, train_list = keypoint_lists(matching_points, kp1, kp2)
+	query_list, train_list = keypoint_lists(matches[0], kp1, kp2)
 
 	#draw all matching points
 	img4 = drawMatches(img1,img2,query_list,train_list)
@@ -138,7 +162,7 @@ if len(good)>3:
 
 	#create transformation matrix
 	homography, mask = cv2.findHomography(query_list, train_list, cv2.RANSAC)
-	print homography
+	#print homography
 
 	ftr_corners = np.float32([[0, 0], [train_width, 0], [train_width, train_height], [0, train_width]]).reshape(1, -1, 2)
 	corners = np.int32( cv2.perspectiveTransform(ftr_corners, homography).reshape(-1, 2) )
@@ -147,13 +171,12 @@ if len(good)>3:
 	dst1 = cv2.warpPerspective(img1,homography, (train_width, train_height))
 	plt.subplot(121),plt.imshow(img1),plt.title('Input')
 	plt.subplot(122),plt.imshow(dst1),plt.title('Output')
-	plt.show()
+	#plt.show()
 
 
 	# Read Image
 	im = cv2.imread('/home/vgrlab/catkin_ws/src/YORK_SLAM_landmark/mcptam/scripts/1.jpg');
 	size = im.shape
-
 
 
 	#training image is 8.5x11 in^2=0.2159 x 0.2794 m^2
@@ -171,8 +194,6 @@ if len(good)>3:
 
 	train_width_in_m=0.2794
 	train_height_in_m=0.2159
-	#print "model points: "
-	#print model_points
 
 	img_points = np.array([
 		                    (0, 0),     # origin top left 
@@ -183,12 +204,12 @@ if len(good)>3:
 
 
 	rot_vect,trans_vect,corner_pts=get_transform(model_points,img_points,homography)
-	print "corner points"
-	print corner_pts
 
 	query_rect_img=drawLines(img1,corner_pts) #draws square on query image
-	plt.subplot(122),plt.imshow(query_rect_img),plt.title('squares')
-	plt.show()
+	cv2.imwrite('square.jpg',query_rect_img)
+	#plt.imshow(query_rect_img),plt.show()
+	#plt.subplot(122),plt.imshow(query_rect_img),plt.title('squares')
+	#plt.show()
 	matrix=[]
 	for i in range(0,3):
 		matrix.append(rot_vect[i])
@@ -197,3 +218,5 @@ if len(good)>3:
 	outfile = TemporaryFile()
 	np.save(outfile, matrix)
 	np.savetxt('/home/vgrlab/catkin_ws/src/YORK_SLAM_landmark/mcptam/scripts/matrix.txt', matrix)
+else :
+	print "not target visible"

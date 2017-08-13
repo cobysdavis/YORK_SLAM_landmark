@@ -13,7 +13,6 @@ def publishTransform(data):
 	call(["/bin/bash", "/home/vgrlab/catkin_ws/src/YORK_SLAM_landmark/mcptam/scripts/shell.sh"])
 	matrix=Float64MultiArray()
 	data = open("matrix.txt", "r").read().split('\n')
-  	print data
 	for i in range(0,6):
 		matrix.data.append(float(data[i]))
 	
