@@ -9,7 +9,7 @@ robotAlive=False
 def talker():
     count=0
     rospy.init_node('picTimer')
-    rate = rospy.Rate(0.8)
+    rate = rospy.Rate(0.6)
     pub=rospy.Publisher('clock',Int32,queue_size=10)
     while not rospy.is_shutdown():
         pub.publish(count)

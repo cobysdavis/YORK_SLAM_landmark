@@ -5,6 +5,17 @@ from random import randint, sample
 import math
 from tempfile import TemporaryFile
 import numpy as np
+import time
+def get_logo_cords():
+	with open('logo_position.txt') as f:
+	    polyShape = []
+	    for line in f:
+		line = line.split() # to deal with blank 
+		if line:            # lines (ie skip them)
+		    line = [float(i) for i in line]
+		    polyShape.append(line)
+	return np.array(polyShape)
+
 def filterGoodKeypoints(kp1,avg1,kp2,avg2):
 	kp1new=[]
 	kp2new=[]
@@ -33,19 +44,24 @@ def get_transform(model_pts,img_points,homography):
 	temp=np.array([img_points])
 	inverse_homography=np.array(np.linalg.inv(homography))
 	image_points=cv2.perspectiveTransform(temp,inverse_homography)
-
+	
 	# Camera internals
 	focal_length = size[1]
 	center = (size[1]/2, size[0]/2)
+	'''
 	camera_matrix = np.array(
 		                 [[focal_length, 0, center[0]],
 		                 [0, focal_length, center[1]],
 		                 [0, 0, 1]], dtype = "double"
 		                 )
-	 
+	'''
+        camera_matrix=np.array([[ 160.94502788, 0, 318.20578823],
+        [   0,  159.63414026,  186.06198428],
+        [   0,    0 , 1 ]],dtype="double")
+        dist_coeffs=np.array([[-0.07132589, -0.03099797, -0.00238763, -0.00045931,  0.0092951 ]])
 	#print "Camera Matrix :\n {0}".format(camera_matrix)
-	 
-	dist_coeffs = np.zeros((4,1)) # Assuming no lens distortion
+	#dist_coeffs = np.zeros((4,1)) # Assuming no lens distortion
+
 	(success, rotation_vector, translation_vector) = cv2.solvePnP(model_points, image_points, camera_matrix, dist_coeffs, flags=cv2.SOLVEPNP_ITERATIVE)
 	 
 	#print "Rotation Vector:\n {0}".format(rotation_vector)
@@ -95,20 +111,82 @@ def drawMatches(img1, img2,list1,list2):
         (x2,y2) = list2[i]
 
         # Draw a small blue circle radius 4 with thickness 1 at both coordinates
-        cv2.circle(out, (int(x1),int(y1)), 8, (255, 0, 0), 7)   
-        cv2.circle(out, (int(x2)+cols1,int(y2)), 8, (255, 0, 0), 7)
+        cv2.circle(out, (int(x1),int(y1)), 8, (0, 255, 0), 7)   
+        cv2.circle(out, (int(x2)+cols1,int(y2)), 8, (0, 255, 0), 7)
+
+        # Draw a blue line with thickness in between the two points
+
+    # Also return the image if you'd like a copy
+    return out
+
+def drawKeypoints(img,kpList):
+    rows = img.shape[0]
+    cols = img.shape[1]
+    out = img.copy()
+
+    # For each pair of points we have between both images
+    # draw circles, then connect a line between them
+    for l in kpList:
+        cv2.circle(out,(l[0],l[1]), 8, (255, 0, 0), 5)
+
+    return out
+
+def connectMatches(img1, img2,list1,list2):
+    # Create a new output image that concatenates the two images together
+    # (a.k.a) a montage
+    rows1 = img1.shape[0]
+    cols1 = img1.shape[1]
+    rows2 = img2.shape[0]
+    cols2 = img2.shape[1]
+
+    out = np.zeros((max([rows1,rows2]),cols1+cols2,3), dtype='uint8')
+
+    # Place the first image to the left
+    out[:rows1,:cols1] = np.dstack([img1, img1, img1])
+
+    # Place the next image to the right of it
+    out[:rows2,cols1:] = np.dstack([img2, img2, img2])
+
+    # For each pair of points we have between both images
+    # draw circles, then connect a line between them
+    for i in range(0,len(list1)):
+        (x1,y1) = list1[i]
+        (x2,y2) = list2[i]
+
+        # Draw a small blue circle radius 4 with thickness 1 at both coordinates
+   	cv2.circle(out, (int(x1),int(y1)), 8, (0, 255, 0), 7)   
+        cv2.circle(out, (int(x2)+cols1,int(y2)), 8, (0, 255, 0), 7)
 
         # Draw a blue line with thickness in between the two points
         cv2.line(out, (int(x1),int(y1)), (int(x2)+cols1,int(y2)), (255, 0, 0), 8)
 
+    # Also return the image if you'd like a copy
+    return out
 
-    # Show the image
-    #cv2.imshow('Matched Features', out)
-    cv2.waitKey(0)
-    cv2.destroyWindow('Matched Features')
+
+
+def drawNothing(img1, img2,list1,list2):
+    # Create a new output image that concatenates the two images together
+    # (a.k.a) a montage
+    rows1 = img1.shape[0]
+    cols1 = img1.shape[1]
+    rows2 = img2.shape[0]
+    cols2 = img2.shape[1]
+
+    out = np.zeros((max([rows1,rows2]),cols1+cols2,3), dtype='uint8')
+
+    # Place the first image to the left
+    out[:rows1,:cols1] = np.dstack([img1, img1, img1])
+
+    # Place the next image to the right of it
+    out[:rows2,cols1:] = np.dstack([img2, img2, img2])
+
+
 
     # Also return the image if you'd like a copy
     return out
+
+#start of program
 
 
 img1 = cv2.imread('/home/vgrlab/catkin_ws/src/YORK_SLAM_landmark/mcptam/scripts/1.jpg',0) # queryImage
@@ -137,11 +215,15 @@ matches = bf.knnMatch(des1,des2, k=2)
 
 
 #applies for cv2.perspectiveTransform previous version before using homography
-print "old matches: " + str(len(matches))
+old= float(len(matches))
 
+#ratio test
 good,matching_points=filterGoodMatches(matches,0.3)
 
-print "new matches: " + str(len(matching_points))
+new=float(len(matching_points))
+ratio=100*new/old
+print "ratio: " + str(ratio)
+
 #to allow homography
 if len(good)>3:
 	print "target recognized, new transformation matrix"
@@ -150,12 +232,19 @@ if len(good)>3:
 	#img3 = cv2.drawMatchesKnn(img1,kp1,img2,kp2,good,None,flags=2)
 	#plt.imshow(img3),plt.show()
 
-	#query_list, train_list = keypoint_lists(matching_points, kp1, kp2)
-	query_list, train_list = keypoint_lists(matches[0], kp1, kp2)
-
+	query_list, train_list = keypoint_lists(matching_points, kp1, kp2)
+	
+	#draw nothing 
+	img4 = drawNothing(img1,img2,query_list,train_list)
+	#plt.imshow(img4),plt.show()	
 	#draw all matching points
-	img4 = drawMatches(img1,img2,query_list,train_list)
-	plt.imshow(img4),plt.show()
+	img5 = drawMatches(img1,img2,query_list,train_list)
+	#plt.imshow(img5),plt.show()
+	print "query_list"
+	print len(query_list)
+	#connect all matching points
+	img6 = connectMatches(img1,img2,query_list,train_list)
+	#plt.imshow(img6),plt.show()
 
 	query_height, query_width = img1.shape[:2]
 	train_height, train_width = img2.shape[:2]
@@ -169,8 +258,8 @@ if len(good)>3:
 
 	#apply to query Image to see if matrix is correct
 	dst1 = cv2.warpPerspective(img1,homography, (train_width, train_height))
-	plt.subplot(121),plt.imshow(img1),plt.title('Input')
-	plt.subplot(122),plt.imshow(dst1),plt.title('Output')
+	#plt.subplot(121),plt.imshow(img1),plt.title('Input')
+	#plt.subplot(122),plt.imshow(dst1),plt.title('Output')
 	#plt.show()
 
 
@@ -183,30 +272,29 @@ if len(good)>3:
 	#define (0,0,0)= top left of training image
 
 	# 3D model points.
-	model_points = np.array([
-		                    (0.0,0.0, 0.0),         # origin/top left of paper
-		                    (0.2794, 0, 0.0),       # top right corner
-		                    (0.2794, 0.2159, 0),   # bottom right
-		                    (0.0, 0.2159, 0),      # bottom left
-		                ])
+	model_points = get_logo_cords()
 
 	 
-
+	#8.5x11 inch paper conversion
 	train_width_in_m=0.2794
 	train_height_in_m=0.2159
-
+	img_points_size=img2.shape
 	img_points = np.array([
 		                    (0, 0),     # origin top left 
-		                    (576, 0),     # top right
-		                    (576, 479),     # bottom right
-		                    (0, 479),     # bottom left
+		                    (img_points_size[1], 0),     # top right
+		                    (img_points_size[1], img_points_size[0]),     # bottom right
+		                    (0, img_points_size[0]),     # bottom left
 		                ], dtype="double")
-
 
 	rot_vect,trans_vect,corner_pts=get_transform(model_points,img_points,homography)
 
+	
+	query_points_img=drawKeypoints(img1,query_list)
+	cv2.imwrite('square.jpg',query_points_img)
+	time.sleep(0.4)
 	query_rect_img=drawLines(img1,corner_pts) #draws square on query image
 	cv2.imwrite('square.jpg',query_rect_img)
+
 	#plt.imshow(query_rect_img),plt.show()
 	#plt.subplot(122),plt.imshow(query_rect_img),plt.title('squares')
 	#plt.show()

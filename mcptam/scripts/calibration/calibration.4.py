@@ -35,7 +35,7 @@ for fname in images:
         img = cv2.drawChessboardCorners(img, (9,6), corners2,ret)
 	img = cv2.resize(img, (0,0), fx=0.5, fy=0.5) 
         cv2.imshow('img',img)
-	cv2.imwrite(str(count) + 'post' + fname,img)
+	cv2.imwrite('post' + fname,img)
 
 	print "waiting"
 print "count : " + str(count)

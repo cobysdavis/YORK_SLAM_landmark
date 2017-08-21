@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+
+<launch>
+
+	<node name="cloudFilter" pkg="YORK_SLAM_landmark" type="cloudFilter.py"/> 
+
+
+	<node name="targetGetter" pkg="YORK_SLAM_landmark" type="targetGetter.py"/> 
+
+
+	<node name="targetPublisher" pkg="YORK_SLAM_landmark" type="targetPublisher.py"/> 
+
+
+</launch>

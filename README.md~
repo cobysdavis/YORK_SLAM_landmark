@@ -5,7 +5,3 @@ x0 y0 z0
 x1 y1 z1
 x2 y2 z2
 x3 y3 z3
-
-Now run the ros node "transformationMatrixNode.py" and this will take in images from "webcamPicPublisher.py" alongside "picTimer.py"
-
-Once all three nodes are running, you should be able to verify whether or not logo recognition is taking place by the messages being printed within  transfomration matrix node.
